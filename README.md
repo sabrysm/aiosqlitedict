@@ -29,7 +29,7 @@ countriesDB = Connect("database.db", "user_id")
 The dictionary should be inside an async function.
 ```python
 async def some_func():
-    countries_data = await countriesDB.to_dict("my_table_name", 123, "col1_name", "col2_name", ...)
+    countries_data = await countriesDB.to_dict("my_table_name", 123, "col1_name", "col2_name", "col3_name", ...)
 ```
 You can insert any number of columns, or you can get all by specifying
 the column name as '*'
@@ -76,4 +76,4 @@ Please make sure to update tests as appropriate.
 ## License
 Please notice that
 this package is built-on top of ``aiosqlite``
-[MIT](https://github.com/sabrysm/aiosqlitedict/LICENSE)
+[MIT](https://github.com/sabrysm/aiosqlitedict/blob/main/LICENSE)
