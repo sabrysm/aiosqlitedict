@@ -30,7 +30,7 @@ countriesDB = Connect("database.db", "user_id")
 The dictionary should be inside an async function.
 ```python
 async def some_func():
-    countries_data = await countriesDB.to_dict("my_table_name", 123, "col1_name", "col2_name", "col3_name", ...)
+    countries_data = await countriesDB.to_dict("my_table_name", 123, "col1_name", "col2_name", ...)
 ```
 You can insert any number of columns, or you can get all by specifying
 the column name as '*'
