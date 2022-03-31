@@ -42,12 +42,8 @@ so you now have made some changes to your dictionary and want to
 export it to sql format again?
 
 ## Convert dict to sqlite table
-to convert your dict to sqlite3 format
 ```python
 async def some_func():
-    countries_data = await countriesDB.to_dict("my_table_name", 123, "*")
-    ...
-    ...
     ...
     await countriesDB.to_sql("my_table_name", 123, countries_data)
 ```
