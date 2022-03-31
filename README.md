@@ -17,7 +17,7 @@ py -m pip install -U aiosqlitedict
 ```
 
 ## Getting Started
-We start by connect our database along with 
+We start by connecting our database along with 
 the reference column
 ```python
 from aiosqlitedict.database import Connect
