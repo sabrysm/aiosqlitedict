@@ -10,7 +10,9 @@ aiosqlitedict is a Python package that provides fast, flexible and expressive da
 ## Main Features:
 * Easy conversion between sqlite table and Python dictionary and vice-versa.
 * Get values of a certain column in a Python list.
-* Order your list ascending or descending.
+* delete from your table.
+* convert your json file into a sql database table.
+* Order your list with parameters like ``order_by``, ``limit`` ..etc
 * Choose any number of columns to your dict, which makes it faster for your dict to load instead of selecting all.
 
 
