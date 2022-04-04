@@ -7,15 +7,14 @@ class Connect:
     Instantiate a conversion to and from sqlite3 database and python dictionary.
     """
 
-    def __init__(self, database_name: str, id_column: str):
+    def __init__(self, database_name: str, table_name: str, id_column: str):
         self.database_name = database_name
+        self.table_name = table_name
         self.id_column = id_column
 
-    async def to_dict(self, table_name, my_id, *column_names: str):
+    async def to_dict(self, my_id, *column_names: str):
         """
         Convert a sqlite3 table into a python dictionary.
-        :param table_name: The name of the database table.
-        :type table_name: str
 
         :param my_id: The id of the row.
         :type my_id: int
@@ -29,7 +28,7 @@ class Connect:
         async with aiosqlite.connect(self.database_name) as db:
             async with db.cursor() as cursor:
 
-                table_name = table_name.replace("'", "").replace('"', "")
+                table_name = self.table_name.replace("'", "").replace('"', "")
                 data = {}
                 columns = str(column_names).replace("(", "").replace(
                     ")", "").replace('"', "").replace("'", "")
@@ -53,11 +52,9 @@ class Connect:
 
     #  To push data to db
 
-    async def to_sql(self, table_name, my_id, dictionary: dict):
+    async def to_sql(self, my_id, dictionary: dict):
         """
         Convert a python dictionary into a sqlite3 table.
-        :param table_name: The name of the database table.
-        :type table_name: str
 
         :param my_id: The id of the row.
         :type my_id: int
@@ -70,7 +67,7 @@ class Connect:
         """
         async with aiosqlite.connect(self.database_name) as db:
             async with db.cursor() as cursor:
-                table_name = table_name.replace("'", "").replace('"', "")
+                table_name = self.table_name.replace("'", "").replace('"', "")
                 getUser = await cursor.execute(f"SELECT {self.id_column} FROM {table_name} WHERE {self.id_column} = ?", (my_id, ))
                 isUserExists = await getUser.fetchone()
                 if isUserExists:
@@ -87,11 +84,9 @@ class Connect:
 
             await db.commit()
 
-    async def select(self, table_name, column_name: str, limit=None, order_by=None, ascending=True):
+    async def select(self, column_name: str, limit=None, order_by=None, ascending=True):
         """
         Select a column from the table.
-        :param table_name: The name of the database table.
-        :type table_name: str
 
         :param column_name: The column name.
         :type column_name: str
@@ -111,7 +106,7 @@ class Connect:
         async with aiosqlite.connect(self.database_name) as db:
             async with db.cursor() as cursor:
 
-                table_name = table_name.replace("'", "").replace('"', "")
+                table_name = self.table_name.replace("'", "").replace('"', "")
                 column = str(column_name).replace("(", "").replace(
                     ")", "").replace('"', "").replace("'", "")
                 column = column.replace(
@@ -152,22 +147,16 @@ class Connect:
 
                 return my_list
 
-    async def delete(self, table_name, my_id):
+    async def delete(self, my_id):
         """
         deletes a certain row from the table.
-        :param table_name: The name of the database table.
-        :type table_name: str
 
         :param my_id: The id of the row.
         :type my_id: int
-
-        :return: None.
-        :rtype: None
         """
         async with aiosqlite.connect(self.database_name) as db:
             async with db.cursor() as cursor:
-
-                table_name = table_name.replace("'", "").replace('"', "")
+                table_name = self.table_name.replace("'", "").replace('"', "")
                 await cursor.execute(
                     f"DELETE FROM {table_name} WHERE {self.id_column} = ?", (my_id, ))
             await db.commit()
