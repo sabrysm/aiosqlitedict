@@ -18,11 +18,11 @@ py -m pip install -U aiosqlitedict
 
 ## Getting Started
 We start by connecting our database along with 
-the reference column
+the table name and the reference column
 ```python
 from aiosqlitedict.database import Connect
 
-countriesDB = Connect("database.db", "user_id")
+DB = Connect("database.db", "my_table_name", "user_id")
 ```
 
 
@@ -30,12 +30,12 @@ countriesDB = Connect("database.db", "user_id")
 The dictionary should be inside an async function.
 ```python
 async def some_func():
-    countries_data = await countriesDB.to_dict("my_table_name", 123, "col1_name", "col2_name", ...)
+    data = await DB.to_dict(123, "col1_name", "col2_name", ...)
 ```
 You can insert any number of columns, or you can get all by specifying
 the column name as '*'
 ```python
-    countries_data = await countriesDB.to_dict("my_table_name", 123, "*")
+    data = await DB.to_dict(123, "*")
 ```
 
 so you now have made some changes to your dictionary and want to
@@ -45,7 +45,7 @@ export it to sql format again?
 ```python
 async def some_func():
     ...
-    await countriesDB.to_sql("my_table_name", 123, countries_data)
+    await DB.to_sql(123, data)
 ```
 
 But what if you want a list of values for a specific column?
@@ -53,24 +53,24 @@ But what if you want a list of values for a specific column?
 ## Select method
 you can have a list of all values of a certain column.
 ```python
-country_names = await countriesDB.select("my_table_name", "col1_name")
+column1_values = await DB.select("col1_name")
 ```
 to limit your selection use ``limit`` parameter.
 ```python
-country_names = await countriesDB.select("my_table_name", "col1_name", limit=10)
+column1_values = await DB.select("col1_name", limit=10)
 ```
 you can also arrange your ``list`` by using ``ascending`` parameter 
 and/or ``order_by`` parameter and specifying a certain column to order your list accordingly.
 ```python
-country_names = await countriesDB.select("my_table_name", "col1_name", order_by="col2_name", ascending=False)
+column1_values = await DB.select("col1_name", order_by="col2_name", ascending=False)
 ```
 
 ## delete method
-delete a certain row from the table by giving the reference key
+delete a certain row from the table by defining the id of the row.
 ```python
 async def some_func():
     ...
-    await countriesDB.delete("my_table_name", 123)
+    await DB.delete(123)
 ```
 
 ## Contributing
