@@ -65,6 +65,14 @@ and/or ``order_by`` parameter and specifying a certain column to order your list
 country_names = await countriesDB.select("my_table_name", "col1_name", order_by="col2_name", ascending=False)
 ```
 
+## delete method
+delete a certain row from the table by giving the reference key
+```python
+async def some_func():
+    ...
+    await countriesDB.delete("my_table_name", 123)
+```
+
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
