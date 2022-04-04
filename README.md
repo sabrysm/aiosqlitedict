@@ -1,6 +1,20 @@
 ![aiosqlitedictbanner](https://user-images.githubusercontent.com/51752028/160848765-35b1577d-0d94-44e3-bca4-d7ef133b5a97.png)
 
+|PyPI| |Python| |Downloads|
 
+.. |PyPI| image:: https://img.shields.io/pypi/v/aiosqlitedict :alt: PyPI
+
+.. |Python| image::https://img.shields.io/pypi/pyversions/aiosqlitedict
+ :target: https://pypi.org/project/aiosqlitedict
+    :alt: PyPI - Python Version
+    
+.. |Downloads| image::
+https://img.shields.io/pypi/dm/aiosqlitedict
+    :target: https://pypi.org/project/aiosqlitedict
+    :alt: PyPI - Downloads
+    
+    
+ 
 aiosqlitedict is a Python package that provides fast, flexible and expressive data structures designed to make working with "relational" or "labeled" data both easy and intuitive.
 
 ## Main Features:
