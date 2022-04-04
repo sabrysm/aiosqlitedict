@@ -151,3 +151,23 @@ class Connect:
                         break
 
                 return my_list
+
+    async def delete(self, table_name, my_id):
+        """
+        deletes a certain row from the table.
+        :param table_name: The name of the database table.
+        :type table_name: str
+
+        :param my_id: The id of the row.
+        :type my_id: int
+
+        :return: None.
+        :rtype: None
+        """
+        async with aiosqlite.connect(self.database_name) as db:
+            async with db.cursor() as cursor:
+
+                table_name = table_name.replace("'", "").replace('"', "")
+                await cursor.execute(
+                    f"DELETE FROM {table_name} WHERE {self.id_column} = ?", (my_id, ))
+            await db.commit()
