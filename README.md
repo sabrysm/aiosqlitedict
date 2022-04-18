@@ -4,7 +4,9 @@
 [![Downloads](https://pepy.tech/badge/aiosqlitedict/month)](https://pepy.tech/project/aiosqlitedict)    
     
  
-aiosqlitedict is a Python package that provides an easy way to convert from json/dict to sqlite and vise versa.
+
+aiosqlitedict is a Python package that provides fast, flexible and expressive data structures designed to make working with "relational" or "labeled" data both easy and intuitive.
+
 
 ## Main Features:
 * Easy conversion between sqlite table and Python dictionary and vice-versa.
