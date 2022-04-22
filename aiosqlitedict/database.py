@@ -34,21 +34,35 @@ class Connect:
                     ")", "").replace('"', "").replace("'", "")
                 columns = columns.replace(
                     columns[-1], "") if columns.endswith(",") else columns
-                getID = await cursor.execute(
-                    f"SELECT {columns} FROM {table_name} WHERE {self.id_column} = ?", (my_id, ))
-                values = await getID.fetchone()
-                values = list(values)
-                for v in range(len(values)):
-                    if str(values[v]).startswith("["):
-                        values[v] = values[v].replace("[", "").replace(']', "").replace(" ' ", "").\
-                            replace(' " ', "").replace(" '", "").replace(' "', "").replace("' ", "").\
-                            replace('" ', "").replace("'", "").replace('"', "").replace(",", "|")
-                        values[v] = values[v].split("|")
-                    else:
-                        continue
-                for i in range(len(column_names)):
-                    data[column_names[i]] = values[i]
-                return data
+                if columns == "*":
+                    getID = await cursor.execute(
+                        f"SELECT {columns} FROM {table_name} WHERE {self.id_column} = ?", (my_id,))
+                    fieldnames = [f[0] for f in getID.description]
+                    values = await getID.fetchone()
+                    values = list(values)
+                    for v in range(len(values)):
+                        if str(values[v]).startswith("["):
+                            values[v] = literal_eval(values[v])
+
+                        else:
+                            continue
+                    for i in range(len(fieldnames)):
+                        data[fieldnames[i]] = values[i]
+                    return data
+                else:
+                    getID = await cursor.execute(
+                        f"SELECT {columns} FROM {table_name} WHERE {self.id_column} = ?", (my_id, ))
+                    values = await getID.fetchone()
+                    values = list(values)
+                    for v in range(len(values)):
+                        if str(values[v]).startswith("["):
+                            values[v] = literal_eval(values[v])
+
+                        else:
+                            continue
+                    for i in range(len(column_names)):
+                        data[column_names[i]] = values[i]
+                    return data
 
     #  To push data to db
 
@@ -67,18 +81,16 @@ class Connect:
         """
         async with aiosqlite.connect(self.database_name) as db:
             async with db.cursor() as cursor:
-                table_name = self.table_name.replace("'", "").replace('"', "")
+                table_name = self.table_name
                 getUser = await cursor.execute(f"SELECT {self.id_column} FROM {table_name} WHERE {self.id_column} = ?", (my_id, ))
                 isUserExists = await getUser.fetchone()
                 if isUserExists:
                     for key, val in dictionary.items():
-                        key = key.replace("'", "").replace('"', "")
                         val = str(val) if str(val).startswith("[") else val
                         await cursor.execute(f"UPDATE {table_name} SET {key} = ? WHERE {self.id_column} = ?", (val, my_id,))
                 else:
                     await cursor.execute(f"INSERT INTO {table_name} ({self.id_column}) VALUES ( ? )", (my_id, ))
                     for key, val in dictionary.items():
-                        key = key.replace("'", "").replace('"', "")
                         val = str(val) if str(val).startswith("[") else val
                         await cursor.execute(f"UPDATE {table_name} SET {key} = ? WHERE {self.id_column} = ?", (val, my_id,))
 
@@ -106,9 +118,8 @@ class Connect:
         async with aiosqlite.connect(self.database_name) as db:
             async with db.cursor() as cursor:
 
-                table_name = self.table_name.replace("'", "").replace('"', "")
-                column = str(column_name).replace("(", "").replace(
-                    ")", "").replace('"', "").replace("'", "")
+                table_name = self.table_name
+                column = str(column_name).replace("(", "").replace(")", "")
                 column = column.replace(
                     column[-1], "") if column.endswith(",") else column
                 if order_by is None:
@@ -156,7 +167,7 @@ class Connect:
         """
         async with aiosqlite.connect(self.database_name) as db:
             async with db.cursor() as cursor:
-                table_name = self.table_name.replace("'", "").replace('"', "")
+                table_name = self.table_name
                 await cursor.execute(
                     f"DELETE FROM {table_name} WHERE {self.id_column} = ?", (my_id, ))
             await db.commit()
