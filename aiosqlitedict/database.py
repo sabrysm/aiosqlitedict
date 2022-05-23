@@ -15,13 +15,10 @@ class Connect:
     async def to_dict(self, my_id, *column_names: str):
         """
         Convert a sqlite3 table into a python dictionary.
-
         :param my_id: The id of the row.
         :type my_id: int
-
         :param column_names: The column name.
         :type column_names: str
-
         :return: The dictionary.
         :rtype: dict
         """
@@ -34,6 +31,8 @@ class Connect:
                     ")", "").replace('"', "").replace("'", "")
                 columns = columns.replace(
                     columns[-1], "") if columns.endswith(",") else columns
+                async def faster_literal_eval(lis):
+                    return literal_eval(lis)
                 if columns == "*":
                     getID = await cursor.execute(
                         f"SELECT {columns} FROM {table_name} WHERE {self.id_column} = ?", (my_id,))
@@ -42,8 +41,10 @@ class Connect:
                     values = list(values)
                     for v in range(len(values)):
                         if str(values[v]).startswith("["):
-                            values[v] = literal_eval(values[v])
-
+                            try:
+                                values[v] = await faster_literal_eval(values[v])
+                            except:
+                                continue
                         else:
                             continue
                     for i in range(len(fieldnames)):
@@ -56,8 +57,10 @@ class Connect:
                     values = list(values)
                     for v in range(len(values)):
                         if str(values[v]).startswith("["):
-                            values[v] = literal_eval(values[v])
-
+                            try:
+                                values[v] = await faster_literal_eval(values[v])
+                            except:
+                                continue
                         else:
                             continue
                     for i in range(len(column_names)):
@@ -69,13 +72,10 @@ class Connect:
     async def to_sql(self, my_id, dictionary: dict):
         """
         Convert a python dictionary into a sqlite3 table.
-
         :param my_id: The id of the row.
         :type my_id: int
-
         :param dictionary: The dictionary object.
         :type dictionary: dict
-
         :return: The SQLite3 Table.
         :rtype: sqlite
         """
@@ -99,19 +99,14 @@ class Connect:
     async def select(self, column_name: str, limit=None, order_by=None, ascending=True):
         """
         Select a column from the table.
-
         :param column_name: The column name.
         :type column_name: str
-
         :param limit:
         :rtype: int
-
         :param order_by:
         :rtype: str
-
         :param ascending:
         :rtype: bool
-
         :return: The list.
         :rtype: list
         """
@@ -137,10 +132,12 @@ class Connect:
                 values = await getValues.fetchall()
                 my_list = []
                 holder = ''
+                async def faster_literal_eval(lis):
+                    return literal_eval(lis)
                 for i in values:
                     try:
                         if str(i).startswith("(") and str(i).endswith(",)") and "'" in str(values) and "[" in str(i):
-                            my_list = [literal_eval(s) for t in values for s in t]
+                            my_list = [faster_literal_eval(s) for t in values for s in t]
                             break
                         elif "'" not in str(values):
                             i = str(i).replace("(", "").replace(",)", "")
@@ -161,7 +158,6 @@ class Connect:
     async def delete(self, my_id):
         """
         deletes a certain row from the table.
-
         :param my_id: The id of the row.
         :type my_id: int
         """
