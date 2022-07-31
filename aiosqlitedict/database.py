@@ -31,6 +31,7 @@ class Connect:
                     ")", "").replace('"', "").replace("'", "")
                 columns = columns.replace(
                     columns[-1], "") if columns.endswith(",") else columns
+
                 async def faster_literal_eval(lis):
                     return literal_eval(lis)
                 if columns == "*":
@@ -96,9 +97,11 @@ class Connect:
 
             await db.commit()
 
-    async def select(self, column_name: str, limit=None, order_by=None, ascending=True):
+    async def select(self, column_name: str, limit: int = None, order_by: str = None, ascending: bool = True
+                     , equal=None, like: str = None, between: tuple = None, distinct: bool = False, offset: int = None):
         """
         Select a column from the table.
+
         :param column_name: The column name.
         :type column_name: str
         :param limit:
@@ -107,51 +110,79 @@ class Connect:
         :rtype: str
         :param ascending:
         :rtype: bool
+        :param equal:
+        :param like:
+        :rtype: str
+        :param distinct:
+        :rtype: bool
+        :param between:
+        :rtype: tuple
+        :param offset:
+        :rtype: int
         :return: The list.
         :rtype: list
         """
         async with aiosqlite.connect(self.database_name) as db:
             async with db.cursor() as cursor:
 
-                table_name = self.table_name
-                column = str(column_name).replace("(", "").replace(")", "")
-                column = column.replace(
-                    column[-1], "") if column.endswith(",") else column
-                if order_by is None:
-                    order_by = column
-                if limit is not None and order_by is None:
-                    getValues = await cursor.execute(f"SELECT {column} FROM {table_name} LIMIT {limit}", (limit,))
-                elif limit is None and order_by is not None and ascending is True:
-                    getValues = await cursor.execute(f"SELECT {column} FROM {table_name} ORDER BY {order_by} ASC")
-                elif limit is None and order_by is not None and ascending is not True:
-                    getValues = await cursor.execute(f"SELECT {column} FROM {table_name} ORDER BY {order_by} DESC")
-                elif limit is not None and order_by is not None and ascending is True:
-                    getValues = await cursor.execute(f"SELECT {column} FROM {table_name} ORDER BY {order_by} ASC LIMIT {limit}")
-                elif limit is not None and order_by is not None and ascending is not True:
-                    getValues = await cursor.execute(f"SELECT {column} FROM {table_name} ORDER BY {order_by} DESC LIMIT {limit}")
+                query = f"SELECT {column_name} FROM {self.table_name}"
+                condition = False
+                if distinct is True:
+                    query = f"SELECT DISTINCT {column_name} FROM {self.table_name}"
+                if equal is not None and condition is False:
+                    condition = True
+                    query += f" WHERE {column_name} = '{equal}'"
+                elif equal is not None and condition is True:
+                    query += f" AND {column_name} = '{equal}'"
+
+                if like is not None and condition is False:
+                    condition = True
+                    query += f" WHERE {column_name} LIKE '%{like}%'"
+                elif like is not None and condition is True:
+                    query += f" AND {column_name} LIKE '%{like}%'"
+                if between is not None and condition is False:
+                    condition = True
+                    query += f" WHERE {column_name} BETWEEN {range(between[0], between[1]).start} AND {range(between[0], between[1]).stop}"
+                elif between is not None and condition is True:
+                    query += f" AND {column_name} BETWEEN {range(between[0], between[1]).start} AND {range(between[0], between[1]).stop}"
+                if order_by is not None:
+                    query += f" ORDER BY {order_by}"
+                if ascending is False:
+                    query += f" DESC"
+                else:
+                    query += f""
+                if limit is not None:
+                    query += f" LIMIT {limit}"
+                if offset is not None and limit is not None:
+                    query += f" OFFSET {offset}"
+                elif offset is not None and limit is None:
+                    raise Exception("You can't use kwarg 'offset' without kwarg 'limit'")
+                getValues = await cursor.execute(query)
                 values = await getValues.fetchall()
                 my_list = []
-                holder = ''
-                async def faster_literal_eval(lis):
-                    return literal_eval(lis)
-                for i in values:
+
+                def isfloat(num):
                     try:
-                        if str(i).startswith("(") and str(i).endswith(",)") and "'" in str(values) and "[" in str(i):
-                            my_list = [faster_literal_eval(s) for t in values for s in t]
-                            break
-                        elif "'" not in str(values):
-                            i = str(i).replace("(", "").replace(",)", "")
-                            if "." in i:
-                                i = float(i)
-                            else:
-                                i = int(i)
-                            my_list.append(i)
-                        else:
-                            i = holder.join(str(i).replace("(", "").replace(",)", "").replace("'", ""))
-                            my_list.append(i)
-                    except:
-                        print("None values")
-                        break
+                        float(num)
+                        return True
+                    except ValueError:
+                        return False
+
+                for i in values:
+                    i = str(i)
+                    i = i[1:-2]  # Remove round brackets
+                    # Check the type of i
+                    if i.isnumeric():
+                        my_list.append(int(i))
+                    elif isfloat(i):
+                        my_list.append(float(i))
+                    elif i == 'None' or i is None:
+                        my_list.append(i)
+                    elif str(i):
+                        i = i[1:-1]
+                        my_list.append(i)
+                    else:
+                        my_list.append(i)
 
                 return my_list
 
