@@ -65,6 +65,19 @@ to limit your selection use ``limit`` parameter.
 ```python
 column1_values = await DB.select("col1_name", limit=10)
 ```
+to start from a certain row.
+```python
+column1_values = await DB.select("col1_name", limit=10, offset=11)
+#  returns 10 results starting from row number 11
+```
+to avoid duplicates use ``distinct``.
+```python
+column1_values = await DB.select("col1_name", distinct=True)
+```
+you can also get numbers in a certain range using ``between``
+```python
+column1_values = await DB.select("score", between=(1, 2000))
+```
 you can also arrange your ``list`` by using ``ascending`` parameter 
 and/or ``order_by`` parameter and specifying a certain column to order your list accordingly.
 ```python
