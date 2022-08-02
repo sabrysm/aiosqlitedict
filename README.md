@@ -9,6 +9,7 @@ aiosqlitedict is a Python package that provides fast, flexible and expressive da
 
 ## Main Features:
 * Easy conversion between sqlite table and Python dictionary and vice-versa.
+* Execute SQL queries.
 * Get values of a certain column in a Python list.
 * delete from your table.
 * convert your json file into a sql database table.
@@ -97,7 +98,7 @@ if you prefer doing SQL Queries by yourself, you can use ``execute`` method
 ```python
 async def some_func():
     ...
-    await DB.execute('SELECT * FROM my_table')
+    await DB.execute('SELECT col_name FROM my_table WHERE ...')
 ```
 
 ## Contributing
