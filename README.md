@@ -28,7 +28,7 @@ the table name and the reference column
 ```python
 from aiosqlitedict.database import Connect
 
-DB = Connect("database.db", "my_table_name", "user_id")
+DB = Connect("database.db", "my_table", "user_id")
 ```
 
 
@@ -90,6 +90,14 @@ delete a certain row from the table by defining the id of the row.
 async def some_func():
     ...
     await DB.delete(123)
+```
+if you prefer doing SQL Queries by yourself, you can use ``execute`` method
+
+## Execute SQL query
+```python
+async def some_func():
+    ...
+    await DB.execute('SELECT * FROM my_table')
 ```
 
 ## Contributing
