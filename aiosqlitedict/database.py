@@ -41,11 +41,11 @@ class Connect:
                     values = await getID.fetchone()
                     values = list(values)
                     for v in range(len(values)):
-                        if str(values[v]).startswith("["):
+                        if str(values[v]).startswith("[") or str(values[v]).startswith("{") or str(values[v]).startswith("("):
                             try:
                                 values[v] = await faster_literal_eval(values[v])
-                            except:
-                                continue
+                            except Exception as e:
+                                raise Exception(e)
                         else:
                             continue
                     for i in range(len(fieldnames)):
@@ -57,11 +57,11 @@ class Connect:
                     values = await getID.fetchone()
                     values = list(values)
                     for v in range(len(values)):
-                        if str(values[v]).startswith("["):
+                        if str(values[v]).startswith("[") or str(values[v]).startswith("{") or str(values[v]).startswith("("):
                             try:
                                 values[v] = await faster_literal_eval(values[v])
-                            except:
-                                continue
+                            except Exception as e:
+                                raise Exception(e)
                         else:
                             continue
                     for i in range(len(column_names)):
@@ -87,12 +87,18 @@ class Connect:
                 isUserExists = await getUser.fetchone()
                 if isUserExists:
                     for key, val in dictionary.items():
-                        val = str(val) if str(val).startswith("[") else val
+                        if str(val).startswith("[") or str(val).startswith("{") or str(val).startswith("("):
+                            val = str(val)
+                        else:
+                            pass
                         await cursor.execute(f"UPDATE {table_name} SET {key} = ? WHERE {self.id_column} = ?", (val, my_id,))
                 else:
                     await cursor.execute(f"INSERT INTO {table_name} ({self.id_column}) VALUES ( ? )", (my_id, ))
                     for key, val in dictionary.items():
-                        val = str(val) if str(val).startswith("[") else val
+                        if str(val).startswith("[") or str(val).startswith("{") or str(val).startswith("("):
+                            val = str(val)
+                        else:
+                            pass
                         await cursor.execute(f"UPDATE {table_name} SET {key} = ? WHERE {self.id_column} = ?", (val, my_id,))
 
             await db.commit()
@@ -170,7 +176,7 @@ class Connect:
 
                 for i in values:
                     i = str(i)
-                    i = i[1:-2]  # Remove round brackets
+                    i = i[1:-2]  # Remove round brackets in i
                     # Check the type of i
                     if i.isnumeric():
                         my_list.append(int(i))
@@ -178,7 +184,10 @@ class Connect:
                         my_list.append(float(i))
                     elif i == 'None' or i is None:
                         my_list.append(i)
-                    elif str(i):
+                    elif i.startswith("'[") or i.startswith("'{") or i.startswith("'("):
+                        i = eval(i)
+                        my_list.append(eval(i))
+                    elif i.isascii():
                         i = i[1:-1]
                         my_list.append(i)
                     else:
@@ -198,3 +207,14 @@ class Connect:
                 await cursor.execute(
                     f"DELETE FROM {table_name} WHERE {self.id_column} = ?", (my_id, ))
             await db.commit()
+
+    async def execute(self, query):
+        """
+        Execute SQL query.
+        """
+        async with aiosqlite.connect(self.database_name) as db:
+            async with db.cursor() as cursor:
+                cur = await cursor.execute(query)
+                res = await cur.fetchall()
+            await db.commit()
+            return res
