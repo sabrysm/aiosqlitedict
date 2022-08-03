@@ -33,11 +33,13 @@ from aiosqlitedict.database import Connect
 
 ds_salaries = Connect("ds_data.db", "ds_salaries", "id")
 ```
-now we can get rows of this table, to get `job_title` and `salary` of user with ``id 0``
+now we can get rows of this table.
 ```python
 async def some_func():
     ...
-    user_0 = await ds_salaries.to_dict(0, "job_title", "salary")
+    user_0 = await ds_salaries.to_dict(0, "job_title", "salary") # to get `job_title` and `salary` of user with id 0
+    print(user_0)
+    user_0 = await ds_salaries.to_dict(0, "*")  # to get all columns of user with id 0
     print(user_0)
 
 asyncio.run(some_func())
@@ -45,6 +47,8 @@ asyncio.run(some_func())
 *OUTPUT:*
 ```py
 {'job_title': 'Data Scientist', 'salary': 70000}
+{'id': 0, 'work_year': 2020, 'experience_level': 'MI', 'employment_type': 'FT', 'job_title': 'Data Scientist', 'salary': 70000, 'salary_currency': 'EUR', 'salary_in_usd': 79833, 'employee_residence': 'DE', 'remote_ratio': 0, 'company_location': 'DE', 'company_size': 'L'}
+
 ```
 now lets do some operations on our data
 ```python
