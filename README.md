@@ -23,90 +23,84 @@ aiosqlitedict is a Python package that provides fast, flexible and expressive da
 py -m pip install -U aiosqlitedict
 ```
 
-## Getting Started
-We start by connecting our database along with 
-the table name and the reference column
+
+## Usage
+
+Aiosqlite is used to import a SQLite3 table as a Python dictionary.
+In this example we have a database file named ``ds_data.db`` this database has a table named ``ds_salaries``
+![ds_data.db](https://i.ibb.co/rvsrPCX/pic1.png)
+Now to create an instance of this table in python we do the following
 ```python
 from aiosqlitedict.database import Connect
 
-DB = Connect("database.db", "my_table", "user_id")
+ds_salaries = Connect("ds_data.db", "ds_salaries", "id")
 ```
-
-
-## Make a dictionary
-The dictionary should be inside an async function.
-```python
-async def some_func():
-    data = await DB.to_dict(123, "col1_name", "col2_name", ...)
-```
-You can insert any number of columns, or you can get all by specifying
-the column name as '*'
-```python
-    data = await DB.to_dict(123, "*")
-```
-
-so you now have made some changes to your dictionary and want to
-export it to sql format again?
-
-## Convert dict to sqlite table
+now we can get rows of this table, to get `job_title` and `salary` of user with ``id 0``
 ```python
 async def some_func():
     ...
-    await DB.to_sql(123, data)
-```
+    user_0 = await ds_salaries.to_dict(0, "job_title", "salary")
+    print(user_0)
 
-But what if you want a list of values for a specific column?
-
-## Select method
-you can have a list of all values of a certain column.
-```python
-column1_values = await DB.select("col1_name")
+asyncio.run(some_func())
 ```
-to limit your selection use ``limit`` parameter.
-```python
-column1_values = await DB.select("col1_name", limit=10)
+*OUTPUT:*
+```py
+{'job_title': 'Data Scientist', 'salary': 70000}
 ```
-to start from a certain row.
+now lets do some operations on our data
 ```python
-column1_values = await DB.select("col1_name", limit=10, offset=11)
-#  returns 10 results starting from row number 11
+    user_0 = await ds_salaries.to_dict(0, "job_title", "salary")
+    user_0["salary"] += 676  # increase user 0's salary
+    print(user_0["salary"])
+    # getting top 5 rows by salaries
+    salaries = await ds_salaries.select("salary", limit=5, ascending=False)
+    print(salaries)
+    # to get "job_title" but order with salaries
+    best_jobs = await ds_salaries.select("job_title", order_by="salary", limit=5, ascending=False)
+    print(best_jobs)
+    # We can do the same task by executing a query
+    best_jobs_2 = await ds_salaries.execute("SELECT job_title FROM ds_salaries ORDER BY salary DESC LIMIT 5")
+    print(best_jobs_2)
+    # to get job_titles that includes the title "scientist" without duplicates
+    scientists = await ds_salaries.select("job_title", like="scientist", distinct=True)
+    print(scientists)
+    # to get all users' salary that have the title "ML Engineer" using a query
+    ML_Engineers = await ds_salaries.execute("SELECT salary FROM ds_salaries WHERE job_title = 'ML Engineer'")
+    print(ML_Engineers)
+    # to get the highest salaries
+    high_salaries = await ds_salaries.select("salary", between=(10000000, 40000000))  # between 30M and 40M salary
+    print(sorted(high_salaries, reverse=True))
+    # but what if we want to know their ids? here order_by is best used
+    high_salaries2 = await ds_salaries.select("salary", order_by="salary", limit=3, ascending=False) # id of richest to poorest
+    print(high_salaries2)
+    high_salaries3 = await ds_salaries.select("id", order_by="salary", limit=3, ascending=False) # id of richest to poorest
+    print(high_salaries3)
 ```
-to avoid duplicates use ``distinct``.
+*OUTPUT*
 ```python
-column1_values = await DB.select("col1_name", distinct=True)
+70676
+[70000, 260000, 85000, 20000, 150000]
+['Data Scientist', 'Data Scientist', 'BI Data Analyst', 'ML Engineer', 'ML Engineer']
+[('Data Scientist',), ('Data Scientist',), ('BI Data Analyst',), ('ML Engineer',), ('ML Engineer',)]
+['Data Scientist', 'Machine Learning Scientist', 'Lead Data Scientist', 'Research Scientist', 'AI Scientist', 'Principal Data Scientist', 'Applied Data Scientist', 'Applied Machine Learning Scientist', 'Staff Data Scientist']
+[(14000,), (270000,), (7000000,), (8500000,), (256000,), (20000,)]
+[30400000, 11000000, 11000000]
+[30400000, 11000000, 11000000]
+[177, 7, 102]
 ```
-you can also get numbers in a certain range using ``between``
+Lets say you want to delete a certain user
 ```python
-column1_values = await DB.select("score", between=(1, 2000))
+    await ds_salaries.delete(5)  # removing user with id 5 from the table.
 ```
-you can also arrange your ``list`` by using ``ascending`` parameter 
-and/or ``order_by`` parameter and specifying a certain column to order your list accordingly.
+finally updating our SQLite table
 ```python
-column1_values = await DB.select("col1_name", order_by="col2_name", ascending=False)
+    await ds_salaries.to_sql(0, user_0) # Saving user 0's data to the table
 ```
-
-## delete method
-delete a certain row from the table by defining the id of the row.
-```python
-async def some_func():
-    ...
-    await DB.delete(123)
-```
-if you prefer doing SQL Queries by yourself, you can use ``execute`` method
-
-## Execute SQL query
-```python
-async def some_func():
-    ...
-    await DB.execute('SELECT col_name FROM my_table WHERE ...')
-```
-
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 Please make sure to update tests as appropriate.
 
 ## License
-Please notice that
-this package is built-on top of ``aiosqlite``
-[MIT](https://github.com/sabrysm/aiosqlitedict/blob/main/LICENSE)
+[MIT](https://choosealicense.com/licenses/mit/)
