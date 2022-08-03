@@ -74,7 +74,7 @@ now lets do some operations on our data
     high_salaries = await ds_salaries.select("salary", between=(10000000, 40000000))  # between 30M and 40M salary
     print(sorted(high_salaries, reverse=True))
     # but what if we want to know their ids? here order_by is best used
-    high_salaries2 = await ds_salaries.select("salary", order_by="salary", limit=3, ascending=False) # id of richest to poorest
+    high_salaries2 = await ds_salaries.select("salary", order_by="salary", limit=3, ascending=False) # same task with different method
     print(high_salaries2)
     high_salaries3 = await ds_salaries.select("id", order_by="salary", limit=3, ascending=False) # id of richest to poorest
     print(high_salaries3)
