@@ -32,8 +32,6 @@ class Connect:
                 columns = columns.replace(
                     columns[-1], "") if columns.endswith(",") else columns
 
-                async def faster_literal_eval(lis):
-                    return literal_eval(lis)
                 if columns == "*":
                     getID = await cursor.execute(
                         f"SELECT {columns} FROM {table_name} WHERE {self.id_column} = ?", (my_id,))
@@ -43,7 +41,7 @@ class Connect:
                     for v in range(len(values)):
                         if str(values[v]).startswith("[") or str(values[v]).startswith("{") or str(values[v]).startswith("("):
                             try:
-                                values[v] = await faster_literal_eval(values[v])
+                                values[v] = literal_eval(values[v])
                             except Exception as e:
                                 raise Exception(e)
                         else:
@@ -59,7 +57,7 @@ class Connect:
                     for v in range(len(values)):
                         if str(values[v]).startswith("[") or str(values[v]).startswith("{") or str(values[v]).startswith("("):
                             try:
-                                values[v] = await faster_literal_eval(values[v])
+                                values[v] = literal_eval(values[v])
                             except Exception as e:
                                 raise Exception(e)
                         else:
