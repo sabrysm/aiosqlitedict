@@ -3,6 +3,8 @@
 ![PyPI](https://img.shields.io/pypi/v/aiosqlitedict?style=flat)
 [![Downloads](https://pepy.tech/badge/aiosqlitedict)](https://pepy.tech/project/aiosqlitedict)    
 
+Python Wrapper For sqlite3 and aiosqlite
+
 ## Main Features:
 * Easy conversion between sqlite table and Python dictionary and vice-versa.
 * Execute SQL queries.
