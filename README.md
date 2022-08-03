@@ -87,6 +87,9 @@ now lets do some operations on our data
 [30400000, 11000000, 11000000]
 [177, 7, 102]
 ```
+| :warning: Warning: Connect.select method is vulnerable to SQL injection.|
+| --- |
+
 Lets say you want to delete a certain user
 ```python
     await ds_salaries.delete(5)  # removing user with id 5 from the table.
@@ -95,6 +98,8 @@ finally updating our SQLite table
 ```python
     await ds_salaries.to_sql(0, user_0) # Saving user 0's data to the table
 ```
+
+
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
