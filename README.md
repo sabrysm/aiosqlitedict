@@ -8,7 +8,8 @@ Python Wrapper For sqlite3 and aiosqlite
 ## Main Features:
 * Easy conversion between sqlite table and Python dictionary and vice-versa.
 * Execute SQL queries.
-* Get values of a certain column in a Python list.
+* Lists, dicts and tuples can be inserted to the DB Table as TEXT and retrieved as their original type.
+* Get values of a certain column in form of a Python list.
 * delete from your table.
 * convert your json file into a sql database table.
 * Order your list with parameters like ``order_by``, ``limit`` ..etc
