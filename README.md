@@ -53,7 +53,7 @@ now lets do some operations on our data
     >>> print(user_0["salary"])
     70676
     
-    # getting top 5 rows by salaries
+    # getting last 5 rows salaries
     >>> salaries = await ds_salaries.select("salary", limit=5, ascending=False)
     >>> print(salaries)
     [70000, 260000, 85000, 20000, 150000]
