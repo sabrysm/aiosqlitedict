@@ -1,7 +1,8 @@
 ![aiosqlitedictbanner](https://user-images.githubusercontent.com/51752028/160848765-35b1577d-0d94-44e3-bca4-d7ef133b5a97.png)
 
 ![PyPI](https://img.shields.io/pypi/v/aiosqlitedict?style=flat)
-[![Downloads](https://pepy.tech/badge/aiosqlitedict)](https://pepy.tech/project/aiosqlitedict)    
+[![Downloads](https://pepy.tech/badge/aiosqlitedict)](https://pepy.tech/project/aiosqlitedict)
+![Discord](https://img.shields.io/discord/1036596132320653354?logo=discord&label=discord&logoColor=white)
 
 Python Wrapper For sqlite3 and aiosqlite
 
