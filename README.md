@@ -28,7 +28,7 @@ py -m pip install -U aiosqlitedict
 
 Aiosqlite is used to import a SQLite3 table as a Python dictionary.
 In this example we have a database file named ``ds_data.db`` this database has a table named ``ds_salaries``
-![ds_data.db](https://i.ibb.co/rvsrPCX/pic1.png)
+![ds_data.db](https://i.ibb.co/88vQgZ7/Screenshot-2024-11-12-081121.png)
 Now to create an instance of this table in python we do the following
 ```python
 >>> from aiosqlitedict.database import Connect
